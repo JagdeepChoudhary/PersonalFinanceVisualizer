@@ -42,7 +42,7 @@ export const UpdateMonthlyBudgetDialog = ({ trigger, categoryId }: UpdateMonthly
       
       setTimeout(() => {
         setOpen(false);
-        setFormData({ monthlyLimit: '' });
+        setFormData({ monthlyLimit: 0 });
       }, 1500);
     } catch (error) {
       toast.error("Failed to update budget limit");
@@ -68,7 +68,7 @@ export const UpdateMonthlyBudgetDialog = ({ trigger, categoryId }: UpdateMonthly
               id="monthlyLimit"
               type="number"
               value={formData.monthlyLimit}
-              onChange={(e) => setFormData({ ...formData, monthlyLimit: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, monthlyLimit: Number(e.target.value) })}
               placeholder="Enter new amount"
               required
             />

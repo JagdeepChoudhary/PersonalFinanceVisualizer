@@ -91,7 +91,7 @@ const MonthlyExpensesChart = () => {
               data={monthlyData} 
               width={500} 
               height={300} 
-              aspect={2}
+              // aspect={2}
             >
               <CartesianGrid vertical={false} />
               <XAxis

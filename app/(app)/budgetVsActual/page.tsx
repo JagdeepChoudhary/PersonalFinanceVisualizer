@@ -134,7 +134,7 @@ function BudgetCard({ title, amount }: BudgetCardProps) {
 
 interface BudgetChartProps {
   title: string
-  data: any[]
+  data: Category[] | MonthlyData[]
   dataKeys: { key: string; name: string; color: string }[]
   xAxisDataKey: string
 }

@@ -15,7 +15,14 @@ import axios from 'axios';
 import { toast } from 'sonner';
 
 // Monthly Budget Dialog Component
-export const SetMonthlyBudgetDialog = ({ trigger }) => {
+
+
+interface SetMonthlyBudgetDialogProps {
+  trigger?: React.ReactNode;
+}
+
+export const SetMonthlyBudgetDialog: React.FC<SetMonthlyBudgetDialogProps> = ({ trigger }: SetMonthlyBudgetDialogProps) => {
+
   const [formData, setFormData] = useState({
     name: '',
     monthlyLimit: '',

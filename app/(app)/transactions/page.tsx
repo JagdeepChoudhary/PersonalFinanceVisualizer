@@ -43,7 +43,7 @@ interface Transaction {
   amount: number;
   date: string;
   description: string;
-  category: object;
+  category: Category;
 }
 interface Category {
   _id: string;
