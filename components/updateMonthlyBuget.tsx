@@ -35,7 +35,7 @@ export const UpdateMonthlyBudgetDialog = ({ trigger, categoryId }: UpdateMonthly
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.put(`/api/category/?id=${categoryId._id}`, {
+      await axios.put(`/api/category/?id=${categoryId._id}`, {
         monthlyLimit: formData.monthlyLimit
       });
       toast.success("Budget limit updated successfully");
@@ -45,6 +45,7 @@ export const UpdateMonthlyBudgetDialog = ({ trigger, categoryId }: UpdateMonthly
         setFormData({ monthlyLimit: 0 });
       }, 1500);
     } catch (error) {
+      console.error("Failed to update budget limit", error);
       toast.error("Failed to update budget limit");
     }
   };

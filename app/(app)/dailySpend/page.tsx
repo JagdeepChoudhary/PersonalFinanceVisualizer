@@ -1,9 +1,16 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { XAxis, CartesianGrid, BarChart, Bar } from "recharts";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import { toast } from "sonner";
 
 interface Transaction {
   _id: string;
@@ -24,21 +31,20 @@ interface DailySpending {
 }
 
 export default function DailySpendingInsights() {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+
   const [dailySpending, setDailySpending] = useState<DailySpending[]>([]);
 
   // Fetch data from the API
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('/api/transactions');
-        setTransactions(response.data);
-
+        const response = await axios.get("/api/transactions");
         // Aggregate daily spending
         const aggregatedData = aggregateDailySpending(response.data);
         setDailySpending(aggregatedData);
       } catch (error) {
-        console.error('Failed to fetch transactions:', error);
+        console.error("Failed to fetch transactions:", error);
+        toast.error("Failed to fetch transactions");
       }
     };
 
@@ -46,11 +52,13 @@ export default function DailySpendingInsights() {
   }, []);
 
   // Aggregate transactions by day
-  const aggregateDailySpending = (transactions: Transaction[]): DailySpending[] => {
+  const aggregateDailySpending = (
+    transactions: Transaction[]
+  ): DailySpending[] => {
     const spendingByDay: Record<string, number> = {};
 
     transactions.forEach((transaction) => {
-      const date = new Date(transaction.date).toISOString().split('T')[0]; // Extract YYYY-MM-DD
+      const date = new Date(transaction.date).toISOString().split("T")[0]; // Extract YYYY-MM-DD
       if (!spendingByDay[date]) {
         spendingByDay[date] = 0;
       }
@@ -63,7 +71,17 @@ export default function DailySpendingInsights() {
       totalSpending,
     }));
   };
-  
+  const ChartConfig = {
+    views: {
+      label: "Total Spending",
+    },
+    desktop: {
+      label: "Desktop",
+      color: "var(--chart-1)",
+    },
+  } satisfies ChartConfig;
+  // Example data
+  //{date: '2025-02-23', totalSpending: 150}
   return (
     <div className="space-y-6">
       {/* Daily Spending Chart */}
@@ -71,26 +89,60 @@ export default function DailySpendingInsights() {
         <CardHeader>
           <CardTitle>Daily Spending Insights</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="h-[400px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                data={dailySpending}
-                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip formatter={(value) => `$${value}`} />
-                <Area
-                  type="monotone"
-                  dataKey="totalSpending"
-                  stroke="#8884d8"
-                  fill="#8884d8"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
+
+        <CardContent className="px-2 sm:p-6">
+          <ChartContainer
+            config={ChartConfig}
+            className="aspect-auto h-[250px] w-full"
+          >
+            <BarChart
+              accessibilityLayer
+              data={dailySpending}
+              margin={{
+                left: 12,
+                right: 12,
+              }}
+            >
+              <CartesianGrid vertical={false} />
+
+              <XAxis
+                dataKey="date"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                minTickGap={32}
+                tickFormatter={(value) => {
+                  const date = new Date(value);
+                  return date.toLocaleDateString("en-IN", {
+                    month: "short",
+                    day: "numeric",
+                  });
+                }}
+              />
+              <ChartTooltip
+                cursor={false}
+                content={
+                  <ChartTooltipContent
+                    indicator="dashed"
+                    nameKey="views"
+                    labelFormatter={(value) => {
+                      return new Date(value).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      });
+                    }}
+                  />
+                }
+              />
+          
+              <Bar
+                dataKey="totalSpending"
+                fill="var(--color-desktop)"
+                radius={4}
+              />
+            </BarChart>
+          </ChartContainer>
         </CardContent>
       </Card>
 

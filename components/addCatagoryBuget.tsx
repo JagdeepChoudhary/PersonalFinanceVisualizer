@@ -29,18 +29,18 @@ export const SetMonthlyBudgetDialog: React.FC<SetMonthlyBudgetDialogProps> = ({ 
     month: ''
   });
   const [open, setOpen] = useState(false);
-console.log(formData)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try{
-    const response = await axios.post("/api/category", formData);
+    await axios.post("/api/category", formData);
     toast.success("Transaction created successfully");
 
     setTimeout(() => {
       setOpen(false);
       setFormData({ name: '', monthlyLimit: '', month: '' });
     }, 1500);
-  } catch (error) {
+    } catch (error) {
+    console.error("Failed to create transaction", error);
     toast.error("Failed to create transaction");
   }
   };

@@ -11,13 +11,20 @@ import {
   Legend,
 } from "recharts";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SetMonthlyBudgetDialog } from "@/components/addCatagoryBuget";
 import { Button } from "@/components/ui/button";
 import { UpdateMonthlyBudgetDialog } from "@/components/updateMonthlyBuget";
 import Link from "next/link";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import HomePageSkeleton from "@/components/homePageSkeleton";
 
 interface Category {
   _id: string;
@@ -63,7 +70,9 @@ export default function CategoryPieChart() {
   const [categoryBreakdown, setCategoryBreakdown] = useState<
     Record<string, number>
   >({});
-
+  const [loading, setLoading] = useState<boolean>(true);
+  console.log(transactions);
+  console.log(recentTransactions);
   useEffect(() => {
     fetchData();
   }, []);
@@ -86,6 +95,8 @@ export default function CategoryPieChart() {
     } catch (error) {
       console.error(error);
       toast.error("Failed to fetch data");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -109,7 +120,9 @@ export default function CategoryPieChart() {
     }));
     setPieChartData(chartData);
   };
-
+  if (loading) {
+    return <HomePageSkeleton />;
+  }
   return (
     <div className="space-y-8 mt-8">
       <div className="flex flex-row justify-center gap-4">
@@ -139,22 +152,56 @@ export default function CategoryPieChart() {
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-[250px]">
-              <div className="space-y-2">
-                {Object.entries(categoryBreakdown).map(([name, amount]) => {
-                  const category = categories.find((cat) => cat.name === name);
-                  return (
-                    <div key={name} className="flex items-center justify-between">
-                      <Badge variant="outline">{name}</Badge>
-                      <span className="font-medium">${amount.toFixed(2)}</span>
-                      {category && (
-                        <UpdateMonthlyBudgetDialog
-                          categoryId={category}
-                          trigger={<Button variant="outline" size="sm">Edit</Button>}
-                        />
-                      )}
-                    </div>
-                  );
-                })}
+              <div className="overflow-x-auto rounded-lg border shadow-sm">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted-background">
+                      <TableHead>Category</TableHead>
+                      <TableHead>Amount</TableHead>
+                      <TableHead>Edit Budget</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {Object.entries(categoryBreakdown).map(
+                      ([name, amount], index) => {
+                        const category = categories.find(
+                          (cat) => cat.name === name
+                        );
+                        return (
+                          <TableRow
+                            key={name}
+                            className={`
+                            ${
+                              index % 2 === 0
+                                ? "bg-background"
+                                : "bg-muted-background"
+                            } 
+                          hover:bg-muted transition-colors`}
+                          >
+                            <TableCell>
+                              {category?.name ?? "Uncategorized"}
+                            </TableCell>
+                            <TableCell className="font-semibold text-green-600">
+                              ${amount.toFixed(2)}
+                            </TableCell>
+                            <TableCell>
+                              {category && (
+                                <UpdateMonthlyBudgetDialog
+                                  categoryId={category}
+                                  trigger={
+                                    <Button variant="outline" size="sm">
+                                      Edit
+                                    </Button>
+                                  }
+                                />
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      }
+                    )}
+                  </TableBody>
+                </Table>
               </div>
             </ScrollArea>
           </CardContent>
@@ -183,7 +230,9 @@ export default function CategoryPieChart() {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value) => `$${Number(value).toFixed(2)}`} />
+                <Tooltip
+                  formatter={(value) => `$${Number(value).toFixed(2)}`}
+                />
                 <Legend verticalAlign="bottom" height={36} />
               </PieChart>
             </ResponsiveContainer>

@@ -35,7 +35,6 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon, Edit, Trash2 } from "lucide-react";
 import { format } from "date-fns";
-import Link from "next/link";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Transaction {
@@ -64,18 +63,9 @@ export default function TransactionComponent() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [addTransactionDate, setAddTransactionDate] = useState<Date | undefined>(undefined);
-  const [isCustom, setIsCustom] = useState(false);
   const [isCustomCategory, setIsCustomCategory] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
-  const handleSelectChange = (value: string) => {
-    if (value === "custom") {
-      setIsCustom(true);
-      setFormData(prev => ({ ...prev, category: '' }));
-    } else {
-      setIsCustom(false);
-      setFormData(prev => ({ ...prev, category: value }));
-    }
-  };
+  
   useEffect(() => {
     fetchTransactions();
     fetchCategories();

@@ -16,9 +16,9 @@ export default function Header() {
   const menuItems = [
     { href: '/', label: 'Home' },
     { href: '/transactions', label: 'Add Transaction' },
-    { href: '/dailySpend', label: 'View Daily Spend' },
-    { href: '/budgetVsActual', label: 'View Budget Vs Spent' },
-    { href: '/monthly-expenses', label: 'View Monthly Expenses' },
+    { href: '/dailySpend', label: 'Daily Spend' },
+    { href: '/budgetVsActual', label: 'Budget Vs Spent' },
+    { href: '/monthly-expenses', label: 'Monthly Expenses' },
   ]
 
   return (
